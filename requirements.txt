@@ -1,0 +1,7 @@
+groq==0.9.0
+groq
+chromadb
+streamlit
+python-dotenv
+sentence-transformers
+python-docx
