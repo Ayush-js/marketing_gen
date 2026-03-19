@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import streamlit as st
 from core.llm_engine import LLMEngine
+from core.image_engine import ImageEngine
 from vectordb.store import ContentVectorStore
 from prompts.templates import TONE_DESCRIPTIONS, PLATFORM_OPTIONS
 from utils.exporter import export_to_txt, export_to_docx
@@ -31,16 +32,13 @@ st.markdown("""
 
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-/* Deep sleek background */
 .stApp { background: #030712; color: #f3f4f6; }
 
-/* Sidebar */
 section[data-testid="stSidebar"] {
     background: #0f172a !important;
     border-right: 1px solid #1e293b;
 }
 
-/* Typography */
 .main-header {
     font-family: 'Outfit', sans-serif;
     font-size: 2.8rem;
@@ -62,7 +60,6 @@ section[data-testid="stSidebar"] {
     margin-top: 8px;
 }
 
-/* Cards */
 .result-card, .image-prompt-card {
     background: #111827;
     border: 1px solid #1f2937;
@@ -73,21 +70,20 @@ section[data-testid="stSidebar"] {
     line-height: 1.7;
     white-space: pre-wrap;
     color: #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .result-card:hover, .image-prompt-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 }
 .result-card { border-left: 4px solid #818cf8; }
 .image-prompt-card { border-left: 4px solid #c084fc; }
 
-/* Badges */
 .badge {
     display: inline-block;
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.2);
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
     border-radius: 6px;
     padding: 4px 10px;
     font-size: 0.75rem;
@@ -98,7 +94,6 @@ section[data-testid="stSidebar"] {
     font-family: 'Outfit', sans-serif;
 }
 
-/* Metrics */
 .metric-tile {
     background: #111827;
     border: 1px solid #1f2937;
@@ -122,14 +117,12 @@ section[data-testid="stSidebar"] {
     margin-top: 4px;
 }
 
-/* Dividers */
 .section-divider {
     border: none;
     border-top: 1px solid #1f2937;
     margin: 28px 0;
 }
 
-/* History */
 .history-item {
     background: #111827;
     border: 1px solid #1f2937;
@@ -138,9 +131,7 @@ section[data-testid="stSidebar"] {
     margin: 8px 0;
     transition: background 0.2s ease;
 }
-.history-item:hover {
-    background: #1e293b;
-}
+.history-item:hover { background: #1e293b; }
 .history-topic {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
@@ -153,7 +144,6 @@ section[data-testid="stSidebar"] {
     margin-top: 6px;
 }
 
-/* Buttons */
 .stButton > button {
     background: linear-gradient(135deg, #4f46e5, #3b82f6) !important;
     color: white !important;
@@ -163,15 +153,14 @@ section[data-testid="stSidebar"] {
     font-weight: 600 !important;
     padding: 10px 24px !important;
     transition: all 0.3s ease !important;
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important;
+    box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2) !important;
 }
-.stButton > button:hover { 
+.stButton > button:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 6px 8px -1px rgba(59,130,246,0.3) !important;
     filter: brightness(1.1) !important;
 }
 
-/* Section Titles */
 .section-title {
     font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;
@@ -182,7 +171,6 @@ section[data-testid="stSidebar"] {
     margin-bottom: 16px;
 }
 
-/* Links */
 .tool-links {
     color: #9ca3af;
     font-size: 0.85rem;
@@ -198,6 +186,13 @@ section[data-testid="stSidebar"] {
     color: #818cf8 !important;
     text-decoration: underline;
 }
+
+.image-container {
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 16px 0;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -208,6 +203,7 @@ def init_session():
         "generated_content": None,
         "generation_meta":   None,
         "image_prompt":      None,
+        "generated_image":   None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -226,7 +222,15 @@ def load_services():
     except ValueError as e:
         return None, None, str(e)
 
-llm, db, api_error = load_services()
+@st.cache_resource
+def load_image_engine():
+    try:
+        return ImageEngine(), None
+    except ValueError as e:
+        return None, str(e)
+
+llm, db, api_error       = load_services()
+img_engine, img_error    = load_image_engine()
 
 
 # ═══════════════════════════════════════════
@@ -281,7 +285,7 @@ with st.sidebar:
                     <div class="history-meta">
                         <span class="badge">{item['content_type']}</span>
                         <span class="badge">{item['tone']}</span><br>
-                        <span style="display:inline-block; margin-top:6px;">{item['timestamp']}</span>
+                        <span style="display:inline-block;margin-top:6px;">{item['timestamp']}</span>
                     </div>
                 </div>""", unsafe_allow_html=True)
         else:
@@ -384,36 +388,34 @@ if generate_clicked:
     elif not usp.strip():
         st.error("Please enter a Key Message / USP.")
     else:
-        # Reset previous results
-        st.session_state.image_prompt = None
+        # Reset all previous results
+        st.session_state.image_prompt    = None
+        st.session_state.generated_image = None
 
         with st.spinner("Crafting your content..."):
             try:
-                # Fetch similar content from VectorDB
                 similar_context = ""
                 if use_memory and db:
                     similar_context = db.find_similar(content_type, topic, audience)
 
-                # Generate with LLM
                 result = llm.generate_content(
-                    content_type=content_type,
-                    topic=topic,
-                    audience=audience,
-                    tone=tone,
-                    platform=platform,
-                    usp=usp,
-                    similar_context=similar_context,
+                    content_type    = content_type,
+                    topic           = topic,
+                    audience        = audience,
+                    tone            = tone,
+                    platform        = platform,
+                    usp             = usp,
+                    similar_context = similar_context,
                 )
 
-                # Save to VectorDB
                 if db:
                     db.save_content(
-                        content_type=content_type,
-                        topic=topic,
-                        audience=audience,
-                        tone=tone,
-                        platform=platform,
-                        generated_content=result["content"],
+                        content_type      = content_type,
+                        topic             = topic,
+                        audience          = audience,
+                        tone              = tone,
+                        platform          = platform,
+                        generated_content = result["content"],
                     )
 
                 st.session_state.generated_content = result["content"]
@@ -429,7 +431,6 @@ if st.session_state.generated_content:
 
     meta = st.session_state.generation_meta
 
-    # Meta badges
     st.markdown(
         f'<span class="badge">{meta["content_type"]}</span>'
         f'<span class="badge">{meta["topic"]}</span>'
@@ -442,7 +443,6 @@ if st.session_state.generated_content:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Content display
     st.markdown(
         f'<div class="result-card">{st.session_state.generated_content}</div>',
         unsafe_allow_html=True,
@@ -484,6 +484,7 @@ if st.session_state.generated_content:
             st.session_state.generated_content = None
             st.session_state.generation_meta   = None
             st.session_state.image_prompt      = None
+            st.session_state.generated_image   = None
             st.rerun()
 
     with b4:
@@ -491,58 +492,99 @@ if st.session_state.generated_content:
             st.session_state.generated_content = None
             st.session_state.generation_meta   = None
             st.session_state.image_prompt      = None
+            st.session_state.generated_image   = None
             st.rerun()
 
-    # ── Image Prompt Section ──────────────────────────────────
+    # ── Image Section ─────────────────────────────────────────
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">AI Image Prompt Generator</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">AI Image Generator</div>', unsafe_allow_html=True)
 
-    img_col1, img_col2 = st.columns([3, 1])
+    img_col1, img_col2, img_col3 = st.columns([3, 1, 1])
     with img_col1:
         st.markdown(
             '<p style="color:#9ca3af;font-size:0.85rem;margin-top:4px;">'
-            'Generate a professional image prompt based on your content — '
-            'paste it into Midjourney, DALL·E, or Adobe Firefly.</p>',
+            'Step 1: Generate an image prompt. '
+            'Step 2: Create the actual image using Stable Diffusion XL.</p>',
             unsafe_allow_html=True,
         )
     with img_col2:
-        generate_img_prompt = st.button("Generate Prompt", use_container_width=True)
+        generate_img_prompt = st.button(
+            "Image Prompt", use_container_width=True
+        )
+    with img_col3:
+        generate_image_btn = st.button(
+            "Generate Image", use_container_width=True,
+            disabled=not st.session_state.get("image_prompt"),
+        )
 
+    # ── Step 1: Generate image prompt ────────────────────────
     if generate_img_prompt:
-        with st.spinner("Crafting your image prompt..."):
+        with st.spinner("Crafting image prompt..."):
             try:
                 img_prompt = llm.generate_image_prompt(
-                    content_type=meta["content_type"],
-                    topic=meta["topic"],
-                    audience=audience,
-                    tone=meta["tone"],
-                    platform=meta["platform"],
+                    content_type = meta["content_type"],
+                    topic        = meta["topic"],
+                    audience     = audience,
+                    tone         = meta["tone"],
+                    platform     = meta["platform"],
                 )
-                st.session_state.image_prompt = img_prompt
+                st.session_state.image_prompt    = img_prompt
+                st.session_state.generated_image = None
             except Exception as e:
-                st.error(f"Image prompt generation failed: {str(e)}")
+                st.error(f"Image prompt failed: {str(e)}")
 
+    # ── Show image prompt ─────────────────────────────────────
     if st.session_state.get("image_prompt"):
         st.markdown(
             f'<div class="image-prompt-card">{st.session_state["image_prompt"]}</div>',
             unsafe_allow_html=True,
         )
-
         st.markdown(
-            '<div class="tool-links">Paste this prompt into: '
+            '<div class="tool-links">Or paste into: '
             '<a href="https://www.midjourney.com" target="_blank">Midjourney</a> · '
             '<a href="https://chat.openai.com" target="_blank">DALL·E</a> · '
-            '<a href="https://firefly.adobe.com" target="_blank">Adobe Firefly</a> · '
-            '<a href="https://stablediffusionweb.com" target="_blank">Stable Diffusion</a>'
+            '<a href="https://firefly.adobe.com" target="_blank">Adobe Firefly</a>'
             '</div>',
             unsafe_allow_html=True,
         )
 
+    # ── Step 2: Generate actual image ────────────────────────
+    if generate_image_btn and st.session_state.get("image_prompt"):
+        if img_error:
+            st.error(f"Image engine not available: {img_error}")
+        else:
+            with st.spinner("Generating image... this takes 20-40 seconds on first run"):
+                try:
+                    final_prompt = img_engine.build_marketing_prompt(
+                        topic        = meta["topic"],
+                        audience     = audience,
+                        tone         = meta["tone"],
+                        platform     = meta["platform"],
+                        content_type = meta["content_type"],
+                        image_prompt = st.session_state["image_prompt"],
+                    )
+                    image_bytes = img_engine.generate_image(final_prompt)
+                    st.session_state.generated_image = image_bytes
+
+                except RuntimeError as e:
+                    st.warning(str(e))
+                except Exception as e:
+                    st.error(f"Image generation failed: {str(e)}")
+
+    # ── Display generated image ───────────────────────────────
+    if st.session_state.get("generated_image"):
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Generated Image</div>', unsafe_allow_html=True)
+        st.image(
+            st.session_state.generated_image,
+            caption=f"{meta['topic']} | {meta['platform']} | {meta['tone']}",
+            use_column_width=True,
+        )
         st.download_button(
-            label="Download Image Prompt",
-            data=st.session_state["image_prompt"],
-            file_name=f"{meta['topic'][:20].replace(' ','_')}_image_prompt.txt",
-            mime="text/plain",
+            label="⬇️ Download Image (.png)",
+            data=st.session_state.generated_image,
+            file_name=f"{meta['topic'][:20].replace(' ','_')}_image.png",
+            mime="image/png",
         )
 
     # ── Brand Memory Viewer ───────────────────────────────────
