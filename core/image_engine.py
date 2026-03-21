@@ -1,10 +1,10 @@
 # =============================================
 #   core/image_engine.py
 #   Hugging Face Image Generation Engine
+#   Model: FLUX.1-schnell (photorealistic)
 # =============================================
 
 import os
-import io
 import requests
 from dotenv import load_dotenv
 
@@ -14,7 +14,7 @@ load_dotenv()
 class ImageEngine:
     """
     Handles image generation via Hugging Face Inference API.
-    Uses Stable Diffusion XL to generate marketing visuals.
+    Uses FLUX.1-schnell for photorealistic marketing visuals.
     """
 
     def __init__(self):
@@ -23,18 +23,20 @@ class ImageEngine:
             raise ValueError(
                 "HF_API_KEY not set. Please add your key to the .env file."
             )
-        self.api_key = api_key
-        self.model   = os.getenv("HF_MODEL", "stabilityai/stable-diffusion-xl-base-1.0")
-        self.api_url = f"https://router.huggingface.co/hf-inference/models/{self.model}"
-        self.headers = {"Authorization": f"Bearer {self.api_key}"}
+        self.api_key  = api_key
+        self.model    = os.getenv("HF_MODEL", "black-forest-labs/FLUX.1-schnell")
+        self.api_url  = f"https://router.huggingface.co/hf-inference/models/{self.model}"
+        self.headers  = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type":  "application/json",
+        }
 
-    def generate_image(self, prompt: str, negative_prompt: str = "") -> bytes:
+    def generate_image(self, prompt: str) -> bytes:
         """
-        Generate an image from a text prompt.
+        Generate a photorealistic image from a text prompt.
 
         Args:
-            prompt          : Detailed image generation prompt
-            negative_prompt : What to avoid in the image
+            prompt : Detailed image generation prompt
 
         Returns:
             bytes: Raw PNG image bytes ready for display
@@ -43,11 +45,10 @@ class ImageEngine:
         payload = {
             "inputs": prompt,
             "parameters": {
-                "negative_prompt": negative_prompt or "blurry, low quality, distorted, watermark, text, ugly",
-                "num_inference_steps": 30,
-                "guidance_scale": 7.5,
-                "width": 1024,
-                "height": 1024,
+                "num_inference_steps": 4,   # FLUX.schnell is optimized for 4 steps
+                "guidance_scale":      0.0, # FLUX.schnell uses 0 guidance scale
+                "width":               1024,
+                "height":              1024,
             }
         }
 
@@ -55,10 +56,10 @@ class ImageEngine:
             self.api_url,
             headers=self.headers,
             json=payload,
-            timeout=120,  # image generation can take up to 60s
+            timeout=120,
         )
 
-        # Model loading — HF warms up cold models
+        # Model warming up
         if response.status_code == 503:
             raise RuntimeError(
                 "Model is loading on Hugging Face servers. "
@@ -67,7 +68,7 @@ class ImageEngine:
 
         if response.status_code != 200:
             raise RuntimeError(
-                f"Image generation failed: {response.status_code} — {response.text[:200]}"
+                f"Image generation failed: {response.status_code} — {response.text[:300]}"
             )
 
         return response.content  # raw PNG bytes
@@ -82,29 +83,26 @@ class ImageEngine:
         image_prompt: str = "",
     ) -> str:
         """
-        Build an optimized image generation prompt for marketing content.
-        Uses the AI-generated image_prompt if available, otherwise builds one.
+        Build an optimized photorealistic prompt for marketing content.
 
         Returns:
-            str: Final prompt ready for Stable Diffusion
+            str: Final prompt ready for FLUX.1-schnell
         """
 
         if image_prompt:
-            # Use the Groq-generated image prompt as base
             base = image_prompt
         else:
-            # Build a default marketing prompt
             base = (
-                f"Professional marketing visual for {topic}, "
+                f"Professional marketing photo for {topic}, "
                 f"targeting {audience}, {tone} style, "
                 f"suitable for {platform} {content_type}"
             )
 
-        # Append quality boosters for better output
+        # FLUX responds well to photography-style descriptors
         quality_suffix = (
-            ", professional photography, high resolution, "
-            "commercial quality, well-lit, sharp focus, "
-            "marketing campaign visual, 4K"
+            ", photorealistic, professional product photography, "
+            "commercial advertising photo, sharp focus, "
+            "studio lighting, high resolution, 4K"
         )
 
         return base + quality_suffix

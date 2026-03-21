@@ -12,15 +12,14 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import streamlit as st
 from core.llm_engine import LLMEngine
-from core.image_engine import ImageEngine
 from vectordb.store import ContentVectorStore
 from prompts.templates import TONE_DESCRIPTIONS, PLATFORM_OPTIONS
 from utils.exporter import export_to_txt, export_to_docx
 
 # ── Page Config ───────────────────────────────────────────────
 st.set_page_config(
-    page_title="Privado Dining AI Agent",
-    page_icon="P",
+    page_title="Marketing Content Generator",
+    page_icon="M",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -32,230 +31,173 @@ st.markdown("""
 
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
-.stApp { background: #f6f7fb; color: #0f172a; }
+/* Deep sleek background */
+.stApp { background: #030712; color: #f3f4f6; }
 
+/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: #071024 !important;
-    border-right: 1px solid rgba(148,163,184,0.18);
+    background: #0f172a !important;
+    border-right: 1px solid #1e293b;
 }
 
-.stSidebar section[data-testid="stSidebarContent"] { color: #e5e7eb; }
-
-.pd-sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 14px 10px 14px;
-}
-.pd-sidebar-logo {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    color: white;
-    box-shadow: 0 12px 30px rgba(124,58,237,0.25);
-}
-.pd-sidebar-title {
+/* Typography */
+.main-header {
     font-family: 'Outfit', sans-serif;
-    font-weight: 900;
-    font-size: 1.05rem;
-    line-height: 1.1;
-}
-.pd-sidebar-subtitle {
-    color: #94a3b8;
-    font-size: 0.78rem;
-    margin-top: 2px;
-    font-weight: 700;
-}
-.pd-sidebar-nav {
-    margin-top: 6px;
-    padding: 4px 10px 12px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.pd-nav-item {
-    padding: 9px 10px;
-    border-radius: 12px;
-    font-size: 0.86rem;
-    font-weight: 750;
-    color: #9ca3af;
-    border: 1px solid transparent;
-}
-.pd-nav-item:hover {
-    background: rgba(255,255,255,0.06);
-    color: #e5e7eb;
-}
-.pd-nav-item-active {
-    background: rgba(124,58,237,0.18);
-    border-color: rgba(168,85,247,0.25);
-    color: #ddd6fe;
-}
-.pd-sidebar-footer {
-    padding: 14px 14px 18px 14px;
-    color: #94a3b8;
-    font-size: 0.85rem;
-    font-weight: 750;
-}
-
-.pd-page-title {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 950;
-    font-size: 1.55rem;
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: -0.02em;
-    margin: 10px 0 4px 0;
-}
-.pd-page-subtitle {
-    color: #6b7280;
-    font-weight: 650;
-    margin-bottom: 10px;
-    line-height: 1.35;
+    line-height: 1.15;
 }
 
+.sub-header {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: #9ca3af;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+}
+
+/* Cards */
 .result-card, .image-prompt-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 20px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 24px;
     margin: 12px 0;
-    font-size: 0.98rem;
-    line-height: 1.75;
+    font-size: 0.95rem;
+    line-height: 1.7;
     white-space: pre-wrap;
-    color: #0f172a;
-    box-shadow: 0 10px 25px rgba(15,23,42,0.06);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    color: #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .result-card:hover, .image-prompt-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 35px rgba(15,23,42,0.08);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
+.result-card { border-left: 4px solid #818cf8; }
+.image-prompt-card { border-left: 4px solid #c084fc; }
 
+/* Badges */
 .badge {
     display: inline-block;
-    background: rgba(124,58,237,0.09);
-    border: 1px solid rgba(124,58,237,0.18);
-    border-radius: 999px;
-    padding: 4px 12px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 6px;
+    padding: 4px 10px;
     font-size: 0.75rem;
-    font-weight: 800;
-    color: #6d28d9;
-    margin: 2px 6px 2px 0;
-    letter-spacing: 0.01em;
+    font-weight: 600;
+    color: #38bdf8;
+    margin: 2px 4px 2px 0;
+    letter-spacing: 0.02em;
+    font-family: 'Outfit', sans-serif;
 }
 
+/* Metrics */
 .metric-tile {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(148,163,184,0.18);
-    border-radius: 14px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
     padding: 16px;
     text-align: center;
-    box-shadow: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .metric-value {
     font-family: 'Outfit', sans-serif;
     font-size: 2rem;
-    font-weight: 950;
-    color: #e5e7eb;
+    font-weight: 800;
+    color: #f3f4f6;
 }
 .metric-label {
     font-size: 0.75rem;
-    color: #a7b0c0;
+    color: #9ca3af;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-weight: 850;
+    letter-spacing: 0.1em;
+    font-weight: 600;
     margin-top: 4px;
 }
 
+/* Dividers */
 .section-divider {
     border: none;
-    border-top: 1px solid #e5e7eb;
-    margin: 18px 0;
+    border-top: 1px solid #1f2937;
+    margin: 28px 0;
 }
 
+/* History */
 .history-item {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(148,163,184,0.22);
-    border-radius: 14px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
     padding: 14px;
     margin: 8px 0;
-    transition: background 0.2s ease, border 0.2s ease;
+    transition: background 0.2s ease;
 }
 .history-item:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(168,85,247,0.35);
+    background: #1e293b;
 }
 .history-topic {
     font-family: 'Outfit', sans-serif;
-    font-weight: 900;
+    font-weight: 600;
     font-size: 0.9rem;
-    color: #e5e7eb;
+    color: #f3f4f6;
 }
 .history-meta {
     font-size: 0.75rem;
-    color: #a7b0c0;
+    color: #9ca3af;
     margin-top: 6px;
 }
 
+/* Buttons */
 .stButton > button {
-    background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+    background: linear-gradient(135deg, #4f46e5, #3b82f6) !important;
     color: white !important;
-    border: 1px solid rgba(124,58,237,0.25) !important;
-    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
     font-family: 'Outfit', sans-serif !important;
-    font-weight: 900 !important;
-    padding: 10px 18px !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 10px 25px rgba(124,58,237,0.18) !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important;
 }
-.stDownloadButton > button {
-    background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
-    color: white !important;
-    border: 1px solid rgba(124,58,237,0.25) !important;
-    border-radius: 12px !important;
-    font-family: 'Outfit', sans-serif !important;
-    font-weight: 900 !important;
-    padding: 10px 18px !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 10px 25px rgba(124,58,237,0.18) !important;
-}
-.stButton > button:hover {
+.stButton > button:hover { 
     transform: translateY(-1px) !important;
-    box-shadow: 0 16px 35px rgba(124,58,237,0.25) !important;
-    filter: brightness(1.06) !important;
+    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.3) !important;
+    filter: brightness(1.1) !important;
 }
 
+/* Section Titles */
 .section-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 0.88rem;
-    font-weight: 900;
-    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #9ca3af;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 12px;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
 }
 
+/* Links */
 .tool-links {
-    color: #64748b;
+    color: #9ca3af;
     font-size: 0.85rem;
     margin-top: 12px;
-    font-weight: 650;
+    font-weight: 500;
 }
 .tool-links a {
-    color: #6d28d9 !important;
+    color: #38bdf8 !important;
     text-decoration: none;
     transition: color 0.2s;
 }
 .tool-links a:hover {
-    color: #5b21b6 !important;
+    color: #818cf8 !important;
     text-decoration: underline;
 }
-
-/* Better contrast for headings rendered inside markdown HTML. */
-div[data-testid="stMarkdownContainer"] p { color: inherit; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -266,7 +208,6 @@ def init_session():
         "generated_content": None,
         "generation_meta":   None,
         "image_prompt":      None,
-        "generated_image":   None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -285,52 +226,18 @@ def load_services():
     except ValueError as e:
         return None, None, str(e)
 
-@st.cache_resource
-def load_image_engine():
-    try:
-        return ImageEngine(), None
-    except ValueError as e:
-        return None, str(e)
-
-llm, db, api_error       = load_services()
-img_engine, img_error    = load_image_engine()
+llm, db, api_error = load_services()
 
 
 # ═══════════════════════════════════════════
 #   SIDEBAR
 # ═══════════════════════════════════════════
 with st.sidebar:
-    st.markdown(
-        """
-        <div class="pd-sidebar-brand">
-            <div class="pd-sidebar-logo">P</div>
-            <div>
-                <div class="pd-sidebar-title">Privado Dining</div>
-                <div class="pd-sidebar-subtitle">AI Agent</div>
-            </div>
-        </div>
+    st.markdown('<div class="main-header" style="font-size:1.8rem">MCG</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Marketing Content Generator</div>', unsafe_allow_html=True)
+    st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
 
-        <div class="pd-sidebar-nav">
-            <div class="pd-nav-item pd-nav-item-active">Workflow</div>
-            <div class="pd-nav-item">Establishment</div>
-            <div class="pd-nav-item">Events</div>
-            <div class="pd-nav-item">Documents</div>
-            <div class="pd-nav-item">Finances</div>
-            <div class="pd-nav-item">Templates</div>
-            <div class="pd-nav-item">Spaces</div>
-            <div class="pd-nav-item">Calendar</div>
-            <div class="pd-nav-item">Tasks</div>
-            <div class="pd-nav-item">Analytics</div>
-            <div class="pd-nav-item">Reports</div>
-            <div class="pd-nav-item">Settings</div>
-        </div>
-
-        <hr class="section-divider">
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown('<div class="section-title">Workflow Library</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Content Library</div>', unsafe_allow_html=True)
 
     if db:
         history = db.get_history(limit=50)
@@ -368,22 +275,13 @@ with st.sidebar:
 
         if display_history:
             for item in display_history:
-                dot_color = {
-                    "Ad Copy": "#22c55e",
-                    "Social Media Posts": "#8b5cf6",
-                    "Email Campaign": "#3b82f6",
-                    "Product Description": "#f59e0b",
-                }.get(item["content_type"], "#38bdf8")
                 st.markdown(f"""
                 <div class="history-item">
-                    <div class="history-topic" style="display:flex;align-items:center;gap:10px;">
-                        <span style="width:10px;height:10px;border-radius:999px;background:{dot_color};display:inline-block;"></span>
-                        <span>{item['topic'][:28]}{'...' if len(item['topic']) > 28 else ''}</span>
-                    </div>
+                    <div class="history-topic">{item['topic'][:28]}{'...' if len(item['topic']) > 28 else ''}</div>
                     <div class="history-meta">
                         <span class="badge">{item['content_type']}</span>
                         <span class="badge">{item['tone']}</span><br>
-                        <span style="display:inline-block;margin-top:6px;">{item['timestamp']}</span>
+                        <span style="display:inline-block; margin-top:6px;">{item['timestamp']}</span>
                     </div>
                 </div>""", unsafe_allow_html=True)
         else:
@@ -402,16 +300,14 @@ with st.sidebar:
                 st.cache_resource.clear()
                 st.rerun()
 
-    st.markdown('<div class="pd-sidebar-footer">Name Surname</div>', unsafe_allow_html=True)
-
 
 # ═══════════════════════════════════════════
 #   MAIN PANEL
 # ═══════════════════════════════════════════
-st.markdown('<div class="pd-page-title">Workflow</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">Marketing Content<br>Generator</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="pd-page-subtitle">Privado Dining style UI for marketing content generation.</div>',
-    unsafe_allow_html=True,
+    '<div class="sub-header">Transform ideas into high-converting marketing content — powered by Groq AI</div>',
+    unsafe_allow_html=True
 )
 st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
 
@@ -425,7 +321,7 @@ if api_error:
     st.stop()
 
 # ── Input Form ────────────────────────────────────────────────
-st.markdown('<div class="section-title">Event Details</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">Configure Your Content</div>', unsafe_allow_html=True)
 
 col1, col2 = st.columns([1, 1], gap="large")
 
@@ -488,34 +384,36 @@ if generate_clicked:
     elif not usp.strip():
         st.error("Please enter a Key Message / USP.")
     else:
-        # Reset all previous results
-        st.session_state.image_prompt    = None
-        st.session_state.generated_image = None
+        # Reset previous results
+        st.session_state.image_prompt = None
 
         with st.spinner("Crafting your content..."):
             try:
+                # Fetch similar content from VectorDB
                 similar_context = ""
                 if use_memory and db:
                     similar_context = db.find_similar(content_type, topic, audience)
 
+                # Generate with LLM
                 result = llm.generate_content(
-                    content_type    = content_type,
-                    topic           = topic,
-                    audience        = audience,
-                    tone            = tone,
-                    platform        = platform,
-                    usp             = usp,
-                    similar_context = similar_context,
+                    content_type=content_type,
+                    topic=topic,
+                    audience=audience,
+                    tone=tone,
+                    platform=platform,
+                    usp=usp,
+                    similar_context=similar_context,
                 )
 
+                # Save to VectorDB
                 if db:
                     db.save_content(
-                        content_type      = content_type,
-                        topic             = topic,
-                        audience          = audience,
-                        tone              = tone,
-                        platform          = platform,
-                        generated_content = result["content"],
+                        content_type=content_type,
+                        topic=topic,
+                        audience=audience,
+                        tone=tone,
+                        platform=platform,
+                        generated_content=result["content"],
                     )
 
                 st.session_state.generated_content = result["content"]
@@ -527,10 +425,11 @@ if generate_clicked:
 # ── Output Panel ──────────────────────────────────────────────
 if st.session_state.generated_content:
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">AI Suggestion</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Generated Content</div>', unsafe_allow_html=True)
 
     meta = st.session_state.generation_meta
 
+    # Meta badges
     st.markdown(
         f'<span class="badge">{meta["content_type"]}</span>'
         f'<span class="badge">{meta["topic"]}</span>'
@@ -543,6 +442,7 @@ if st.session_state.generated_content:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # Content display
     st.markdown(
         f'<div class="result-card">{st.session_state.generated_content}</div>',
         unsafe_allow_html=True,
@@ -584,7 +484,6 @@ if st.session_state.generated_content:
             st.session_state.generated_content = None
             st.session_state.generation_meta   = None
             st.session_state.image_prompt      = None
-            st.session_state.generated_image   = None
             st.rerun()
 
     with b4:
@@ -592,104 +491,63 @@ if st.session_state.generated_content:
             st.session_state.generated_content = None
             st.session_state.generation_meta   = None
             st.session_state.image_prompt      = None
-            st.session_state.generated_image   = None
             st.rerun()
 
-    # ── Image Section ─────────────────────────────────────────
+    # ── Image Prompt Section ──────────────────────────────────
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Image Generator</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">AI Image Prompt Generator</div>', unsafe_allow_html=True)
 
-    img_col1, img_col2, img_col3 = st.columns([3, 1, 1])
+    img_col1, img_col2 = st.columns([3, 1])
     with img_col1:
         st.markdown(
             '<p style="color:#9ca3af;font-size:0.85rem;margin-top:4px;">'
-            'Step 1: Generate an image prompt. '
-            'Step 2: Create the actual image using Stable Diffusion XL.</p>',
+            'Generate a professional image prompt based on your content — '
+            'paste it into Midjourney, DALL·E, or Adobe Firefly.</p>',
             unsafe_allow_html=True,
         )
     with img_col2:
-        generate_img_prompt = st.button(
-            "Image Prompt", use_container_width=True
-        )
-    with img_col3:
-        generate_image_btn = st.button(
-            "Generate Image", use_container_width=True,
-            disabled=not st.session_state.get("image_prompt"),
-        )
+        generate_img_prompt = st.button("Generate Prompt", use_container_width=True)
 
-    # ── Step 1: Generate image prompt ────────────────────────
     if generate_img_prompt:
-        with st.spinner("Crafting image prompt..."):
+        with st.spinner("Crafting your image prompt..."):
             try:
                 img_prompt = llm.generate_image_prompt(
-                    content_type = meta["content_type"],
-                    topic        = meta["topic"],
-                    audience     = audience,
-                    tone         = meta["tone"],
-                    platform     = meta["platform"],
+                    content_type=meta["content_type"],
+                    topic=meta["topic"],
+                    audience=audience,
+                    tone=meta["tone"],
+                    platform=meta["platform"],
                 )
-                st.session_state.image_prompt    = img_prompt
-                st.session_state.generated_image = None
+                st.session_state.image_prompt = img_prompt
             except Exception as e:
-                st.error(f"Image prompt failed: {str(e)}")
+                st.error(f"Image prompt generation failed: {str(e)}")
 
-    # ── Show image prompt ─────────────────────────────────────
     if st.session_state.get("image_prompt"):
         st.markdown(
             f'<div class="image-prompt-card">{st.session_state["image_prompt"]}</div>',
             unsafe_allow_html=True,
         )
+
         st.markdown(
-            '<div class="tool-links">Or paste into: '
+            '<div class="tool-links">Paste this prompt into: '
             '<a href="https://www.midjourney.com" target="_blank">Midjourney</a> · '
             '<a href="https://chat.openai.com" target="_blank">DALL·E</a> · '
-            '<a href="https://firefly.adobe.com" target="_blank">Adobe Firefly</a>'
+            '<a href="https://firefly.adobe.com" target="_blank">Adobe Firefly</a> · '
+            '<a href="https://stablediffusionweb.com" target="_blank">Stable Diffusion</a>'
             '</div>',
             unsafe_allow_html=True,
         )
 
-    # ── Step 2: Generate actual image ────────────────────────
-    if generate_image_btn and st.session_state.get("image_prompt"):
-        if img_error:
-            st.error(f"Image engine not available: {img_error}")
-        else:
-            with st.spinner("Generating image... this takes 20-40 seconds on first run"):
-                try:
-                    final_prompt = img_engine.build_marketing_prompt(
-                        topic        = meta["topic"],
-                        audience     = audience,
-                        tone         = meta["tone"],
-                        platform     = meta["platform"],
-                        content_type = meta["content_type"],
-                        image_prompt = st.session_state["image_prompt"],
-                    )
-                    image_bytes = img_engine.generate_image(final_prompt)
-                    st.session_state.generated_image = image_bytes
-
-                except RuntimeError as e:
-                    st.warning(str(e))
-                except Exception as e:
-                    st.error(f"Image generation failed: {str(e)}")
-
-    # ── Display generated image ───────────────────────────────
-    if st.session_state.get("generated_image"):
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="section-title">Generated Image</div>', unsafe_allow_html=True)
-        st.image(
-            st.session_state.generated_image,
-            caption=f"{meta['topic']} | {meta['platform']} | {meta['tone']}",
-            use_column_width=True,
-        )
         st.download_button(
-            label="⬇️ Download Image (.png)",
-            data=st.session_state.generated_image,
-            file_name=f"{meta['topic'][:20].replace(' ','_')}_image.png",
-            mime="image/png",
+            label="Download Image Prompt",
+            data=st.session_state["image_prompt"],
+            file_name=f"{meta['topic'][:20].replace(' ','_')}_image_prompt.txt",
+            mime="text/plain",
         )
 
     # ── Brand Memory Viewer ───────────────────────────────────
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
-    with st.expander("Thread — Brand Memory"):
+    with st.expander("Brand Memory — Retrieved Context"):
         if db and use_memory:
             ctx = db.find_similar(content_type, topic, audience)
             if ctx:
