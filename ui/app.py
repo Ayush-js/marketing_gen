@@ -25,68 +25,133 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+    --accent-amber:  #c47820;
+    --accent-rose:   #a05c10;
+    --border-main:   rgba(120, 80, 30, 0.22);
+    --border-hover:  rgba(200, 130, 50, 0.38);
+    --sidebar-text:  #c8c8c8;
+    --sidebar-muted: #606060;
+    --sidebar-title: #e8e8e8;
+}
 
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-.stApp { background: #030712; color: #f3f4f6; }
-section[data-testid="stSidebar"] {
-    background: #0f172a !important;
-    border-right: 1px solid #1e293b;
+
+.stApp {
+    background: #080808;
+    color: #e0e0e0;
 }
+
+/* ── Sidebar — cold pure dark ── */
+section[data-testid="stSidebar"] {
+    background: #0c0c0c !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+section[data-testid="stSidebar"] * {
+    color: var(--sidebar-text) !important;
+}
+section[data-testid="stSidebar"] .section-title {
+    color: var(--sidebar-muted) !important;
+}
+section[data-testid="stSidebar"] .history-meta {
+    color: var(--sidebar-muted) !important;
+}
+section[data-testid="stSidebar"] .metric-value {
+    color: #d4a060 !important;
+}
+section[data-testid="stSidebar"] .metric-label {
+    color: var(--sidebar-muted) !important;
+}
+section[data-testid="stSidebar"] .history-topic {
+    color: var(--sidebar-title) !important;
+}
+section[data-testid="stSidebar"] p {
+    color: var(--sidebar-muted) !important;
+}
+
+/* ── Main panel — warm amber glow from top ── */
+section[data-testid="stMain"] {
+    background:
+        radial-gradient(
+            ellipse 90% 55% at 50% 0%,
+            rgba(180, 90, 15, 0.60) 0%,
+            rgba(140, 65, 10, 0.32) 38%,
+            transparent 65%
+        ),
+        radial-gradient(
+            ellipse 55% 42% at 85% 8%,
+            rgba(160, 70, 10, 0.22),
+            transparent 52%
+        ),
+        linear-gradient(
+            180deg,
+            #1c1005 0%,
+            #120a03 28%,
+            #090603 58%,
+            #060402 100%
+        ) !important;
+}
+
+/* ── Main typography — white/grey not warm ── */
 .main-header {
     font-family: 'Outfit', sans-serif;
     font-size: 2.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #f0f0f0;
     letter-spacing: -0.02em;
     line-height: 1.15;
 }
 .sub-header {
     font-family: 'Outfit', sans-serif;
     font-size: 1rem;
-    color: #9ca3af;
+    color: #888888;
     font-weight: 400;
     letter-spacing: 0.02em;
     margin-top: 8px;
 }
+
+/* ── Cards ── */
 .result-card, .image-prompt-card {
-    background: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(35, 22, 8, 0.90), rgba(20, 12, 4, 0.95));
+    border: 1px solid var(--border-main);
+    border-radius: 14px;
     padding: 24px;
     margin: 12px 0;
     font-size: 0.95rem;
     line-height: 1.7;
     white-space: pre-wrap;
-    color: #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: #e0e0e0;
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.50);
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 .result-card:hover, .image-prompt-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    border-color: var(--border-hover);
 }
-.result-card { border-left: 4px solid #818cf8; }
-.image-prompt-card { border-left: 4px solid #c084fc; }
+.result-card       { border-left: 4px solid #c47820; }
+.image-prompt-card { border-left: 4px solid #a05c10; }
+
+/* ── Badges ── */
 .badge {
     display: inline-block;
-    background: rgba(56,189,248,0.1);
-    border: 1px solid rgba(56,189,248,0.2);
-    border-radius: 6px;
+    background: rgba(160, 100, 30, 0.18);
+    border: 1px solid rgba(180, 120, 40, 0.28);
+    border-radius: 8px;
     padding: 4px 10px;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #38bdf8;
+    color: #c09050;
     margin: 2px 4px 2px 0;
     letter-spacing: 0.02em;
     font-family: 'Outfit', sans-serif;
 }
+
+/* ── Metric tiles ── */
 .metric-tile {
-    background: #111827;
-    border: 1px solid #1f2937;
+    background: rgba(20, 14, 6, 0.80);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 12px;
     padding: 16px;
     text-align: center;
@@ -95,80 +160,194 @@ section[data-testid="stSidebar"] {
     font-family: 'Outfit', sans-serif;
     font-size: 2rem;
     font-weight: 800;
-    color: #f3f4f6;
+    color: #d4a060;
 }
 .metric-label {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: #606060;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-weight: 600;
     margin-top: 4px;
 }
+
+/* ── Divider ── */
 .section-divider {
     border: none;
-    border-top: 1px solid #1f2937;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
     margin: 28px 0;
 }
+
+/* ── History items ── */
 .history-item {
-    background: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
     padding: 14px;
     margin: 8px 0;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
-.history-item:hover { background: #1e293b; }
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
 .history-topic {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #f3f4f6;
+    color: #e8e8e8;
 }
 .history-meta {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: #606060;
     margin-top: 6px;
 }
-.stButton > button {
-    background: linear-gradient(135deg, #4f46e5, #3b82f6) !important;
-    color: white !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    border-radius: 8px !important;
-    font-family: 'Outfit', sans-serif !important;
-    font-weight: 600 !important;
-    padding: 10px 24px !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2) !important;
-}
-.stButton > button:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 8px -1px rgba(59,130,246,0.3) !important;
-    filter: brightness(1.1) !important;
-}
+
+/* ── Section titles ── */
 .section-title {
     font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
-    color: #9ca3af;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-bottom: 16px;
 }
+section[data-testid="stSidebar"] .section-title {
+    color: #505050 !important;
+}
+section[data-testid="stMain"] .section-title {
+    color: #888888 !important;
+}
+
+/* ── Widget labels ── */
+section[data-testid="stSidebar"] label[data-testid="stWidgetLabel"] p,
+section[data-testid="stSidebar"] label[data-testid="stWidgetLabel"] span {
+    color: #606060 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+section[data-testid="stMain"] label[data-testid="stWidgetLabel"] p,
+section[data-testid="stMain"] label[data-testid="stWidgetLabel"] span {
+    color: #888888 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+/* ── Sidebar inputs ── */
+section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div,
+section[data-testid="stSidebar"] .stTextInput input {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    color: #c0c0c0 !important;
+}
+section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:hover {
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* ── Main inputs ── */
+section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div,
+section[data-testid="stMain"] .stTextInput input,
+section[data-testid="stMain"] .stTextArea textarea {
+    background: rgba(30, 18, 6, 0.90) !important;
+    border: 1px solid rgba(130, 80, 25, 0.28) !important;
+    border-radius: 11px !important;
+    color: #e0e0e0 !important;
+    font-weight: 400 !important;
+}
+section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div:hover,
+section[data-testid="stMain"] .stTextInput input:hover {
+    border-color: rgba(200, 130, 45, 0.40) !important;
+}
+section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div:focus-within,
+section[data-testid="stMain"] .stTextInput input:focus {
+    border-color: rgba(200, 130, 50, 0.60) !important;
+    box-shadow: 0 0 0 1px rgba(200, 130, 50, 0.18) !important;
+}
+section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] span,
+section[data-testid="stMain"] .stSelectbox div[data-baseweb="select"] * {
+    font-weight: 500 !important;
+    color: #e0e0e0 !important;
+}
+
+/* ── Dropdown menu ── */
+div[data-baseweb="popover"] li[role="option"],
+div[data-baseweb="menu"] li[role="option"],
+ul[role="listbox"] li[role="option"] {
+    font-weight: 500 !important;
+    color: #c8c8c8 !important;
+    transition: background-color 0.12s ease !important;
+}
+div[data-baseweb="popover"] li[role="option"]:hover,
+div[data-baseweb="popover"] li[role="option"][aria-selected="true"],
+div[data-baseweb="menu"] li[role="option"]:hover,
+ul[role="listbox"] li[role="option"]:hover {
+    font-weight: 700 !important;
+    background-color: rgba(180, 110, 30, 0.18) !important;
+    color: #f0f0f0 !important;
+}
+div[data-baseweb="popover"] ul,
+div[data-baseweb="menu"] ul {
+    background: #1a1008 !important;
+    border: 1px solid rgba(140, 90, 25, 0.22) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.70) !important;
+    padding: 6px 0 !important;
+}
+
+/* ── Checkbox ── */
+.stCheckbox label p, .stCheckbox label span {
+    font-weight: 500 !important;
+    color: #888888 !important;
+    font-size: 0.875rem !important;
+}
+
+/* ── Buttons ── */
+.stButton > button,
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #c47820, #8a5010) !important;
+    color: #f5f5f5 !important;
+    border: 1px solid rgba(180, 120, 35, 0.28) !important;
+    border-radius: 10px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
+    box-shadow: 0 4px 18px rgba(140, 80, 8, 0.28) !important;
+}
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 24px rgba(160, 95, 12, 0.36) !important;
+    filter: brightness(1.08) !important;
+}
+
+/* ── Tool links ── */
 .tool-links {
-    color: #9ca3af;
+    color: #888888;
     font-size: 0.85rem;
     margin-top: 12px;
     font-weight: 500;
 }
 .tool-links a {
-    color: #38bdf8 !important;
+    color: #c47820 !important;
     text-decoration: none;
     transition: color 0.2s;
 }
 .tool-links a:hover {
-    color: #818cf8 !important;
+    color: #e8a840 !important;
     text-decoration: underline;
+}
+
+/* ── Expander ── */
+.streamlit-expanderHeader {
+    font-weight: 600 !important;
+    color: #606060 !important;
+}
+div[data-testid="stExpander"] {
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -214,8 +393,15 @@ img_engine, img_error = load_image_engine()
 #   SIDEBAR
 # ═══════════════════════════════════════════
 with st.sidebar:
-    st.markdown('<div class="main-header" style="font-size:1.8rem">MCG</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Marketing Content Generator</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="main-header" style="font-size:1.8rem;color:#d8d8d8;'
+        'background:none;-webkit-text-fill-color:#d8d8d8;">MCG</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="sub-header" style="color:#585858;">Marketing Content Generator</div>',
+        unsafe_allow_html=True
+    )
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">Content Library</div>', unsafe_allow_html=True)
 
@@ -261,12 +447,12 @@ with st.sidebar:
                     <div class="history-meta">
                         <span class="badge">{item['content_type']}</span>
                         <span class="badge">{item['tone']}</span><br>
-                        <span style="display:inline-block;margin-top:6px;">{item['timestamp']}</span>
+                        <span style="display:inline-block;margin-top:6px;color:#505050;">{item['timestamp']}</span>
                     </div>
                 </div>""", unsafe_allow_html=True)
         else:
             st.markdown(
-                '<p style="color:#6b7280;font-size:0.85rem;margin-top:8px">'
+                '<p style="color:#484848;font-size:0.85rem;margin-top:8px">'
                 'No history yet. Generate your first piece of content.</p>',
                 unsafe_allow_html=True
             )
@@ -283,7 +469,10 @@ with st.sidebar:
 # ═══════════════════════════════════════════
 #   MAIN PANEL
 # ═══════════════════════════════════════════
-st.markdown('<div class="main-header">Marketing Content<br>Generator</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="main-header">Marketing Content<br>Generator</div>',
+    unsafe_allow_html=True
+)
 st.markdown(
     '<div class="sub-header">Transform ideas into high-converting marketing content — powered by Groq AI</div>',
     unsafe_allow_html=True
@@ -327,7 +516,7 @@ with col2:
 
 st.markdown(
     f'<span class="badge">{tone}</span> '
-    f'<span style="color:#9ca3af;font-size:0.85rem;font-weight:500;">{TONE_DESCRIPTIONS[tone]}</span>',
+    f'<span style="color:#888888;font-size:0.85rem;font-weight:500;">{TONE_DESCRIPTIONS[tone]}</span>',
     unsafe_allow_html=True,
 )
 st.markdown("<br>", unsafe_allow_html=True)
@@ -410,7 +599,6 @@ if st.session_state.generated_content:
     )
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Action Buttons ────────────────────────────────────────
     b1, b2, b3, b4 = st.columns(4)
     with b1:
         st.download_button(
@@ -458,7 +646,7 @@ if st.session_state.generated_content:
     img_col1, img_col2, img_col3 = st.columns([3, 1, 1])
     with img_col1:
         st.markdown(
-            '<p style="color:#9ca3af;font-size:0.85rem;margin-top:4px;">'
+            '<p style="color:#888888;font-size:0.85rem;margin-top:4px;">'
             'Step 1: Generate an image prompt. '
             'Step 2: Create the actual image using FLUX.1-schnell.</p>',
             unsafe_allow_html=True,
@@ -472,7 +660,6 @@ if st.session_state.generated_content:
             disabled=not st.session_state.get("image_prompt"),
         )
 
-    # ── Step 1: Generate image prompt ────────────────────────
     if generate_img_prompt:
         with st.spinner("Crafting image prompt..."):
             try:
@@ -488,7 +675,6 @@ if st.session_state.generated_content:
             except Exception as e:
                 st.error(f"Image prompt failed: {str(e)}")
 
-    # ── Show image prompt ─────────────────────────────────────
     if st.session_state.get("image_prompt"):
         st.markdown(
             f'<div class="image-prompt-card">{st.session_state["image_prompt"]}</div>',
@@ -503,7 +689,6 @@ if st.session_state.generated_content:
             unsafe_allow_html=True,
         )
 
-    # ── Step 2: Generate actual image ────────────────────────
     if generate_image_btn and st.session_state.get("image_prompt"):
         if img_error:
             st.error(f"Image engine not available: {img_error}")
@@ -525,7 +710,6 @@ if st.session_state.generated_content:
                 except Exception as e:
                     st.error(f"Image generation failed: {str(e)}")
 
-    # ── Display generated image ───────────────────────────────
     if st.session_state.get("generated_image"):
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown('<div class="section-title">Generated Image</div>', unsafe_allow_html=True)
@@ -541,7 +725,6 @@ if st.session_state.generated_content:
             mime="image/png",
         )
 
-    # ── Brand Memory Viewer ───────────────────────────────────
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
     with st.expander("Brand Memory — Retrieved Context"):
         if db and use_memory:
