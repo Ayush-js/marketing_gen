@@ -732,4 +732,4 @@ if st.session_state.generated_content:
             if ctx:
                 st.markdown(f"```\n{ctx}\n```")
             else:
-                st.info("No similar past content found. This was a fresh generation.")
+                st.info("No similar past content found. This was a fresh generation.") 
