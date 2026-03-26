@@ -25,148 +25,154 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-    --accent-amber:  #c47820;
-    --accent-rose:   #a05c10;
-    --border-main:   rgba(120, 80, 30, 0.22);
-    --border-hover:  rgba(200, 130, 50, 0.38);
-    --sidebar-text:  #c8c8c8;
-    --sidebar-muted: #606060;
-    --sidebar-title: #e8e8e8;
+    --bg-app:        #0D0D0D;
+    --bg-sidebar:    #1A1A1A;
+    --bg-elevated:   #141414;
+    --bg-card:       #2C2C2C;
+    --bg-input:      #1A1A1A;
+    --border-subtle: #333333;
+    --border-hover:  #404040;
+    --text-primary:  #F5F5F5;
+    --text-secondary:#888888;
+    --text-muted:    #888888;
+    --accent-warm:   #A0522D;
+    --accent-glow:   rgba(139, 69, 19, 0.35);
 }
 
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 .stApp {
-    background: #080808;
-    color: #e0e0e0;
+    background: var(--bg-app);
+    color: var(--text-primary);
 }
 
-/* ── Sidebar — cold pure dark ── */
+/* ── Sidebar (Visionary-style graphite) ── */
 section[data-testid="stSidebar"] {
-    background: #0c0c0c !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-sidebar) !important;
+    border-right: 1px solid var(--border-subtle);
 }
 section[data-testid="stSidebar"] * {
-    color: var(--sidebar-text) !important;
+    color: #E0E0E0 !important;
 }
 section[data-testid="stSidebar"] .section-title {
-    color: var(--sidebar-muted) !important;
+    color: var(--text-muted) !important;
 }
 section[data-testid="stSidebar"] .history-meta {
-    color: var(--sidebar-muted) !important;
+    color: var(--text-muted) !important;
 }
 section[data-testid="stSidebar"] .metric-value {
-    color: #d4a060 !important;
+    color: var(--text-primary) !important;
 }
 section[data-testid="stSidebar"] .metric-label {
-    color: var(--sidebar-muted) !important;
+    color: var(--text-muted) !important;
 }
 section[data-testid="stSidebar"] .history-topic {
-    color: var(--sidebar-title) !important;
+    color: var(--text-primary) !important;
 }
 section[data-testid="stSidebar"] p {
-    color: var(--sidebar-muted) !important;
+    color: var(--text-muted) !important;
 }
 
-/* ── Main panel — warm amber glow from top ── */
+/* ── Main panel — warm copper top-left → deep charcoal / purple-black ── */
 section[data-testid="stMain"] {
     background:
         radial-gradient(
-            ellipse 90% 55% at 50% 0%,
-            rgba(180, 90, 15, 0.60) 0%,
-            rgba(140, 65, 10, 0.32) 38%,
-            transparent 65%
+            ellipse 85% 60% at 12% 8%,
+            rgba(160, 82, 45, 0.42) 0%,
+            rgba(100, 50, 25, 0.18) 42%,
+            transparent 68%
         ),
         radial-gradient(
-            ellipse 55% 42% at 85% 8%,
-            rgba(160, 70, 10, 0.22),
-            transparent 52%
+            ellipse 65% 55% at 92% 88%,
+            rgba(35, 22, 45, 0.45) 0%,
+            transparent 55%
         ),
         linear-gradient(
-            180deg,
-            #1c1005 0%,
-            #120a03 28%,
-            #090603 58%,
-            #060402 100%
+            155deg,
+            #0D0D0D 0%,
+            #0a0908 35%,
+            #0D0D0D 72%,
+            #08070a 100%
         ) !important;
 }
 
-/* ── Main typography — white/grey not warm ── */
+/* ── Typography ── */
 .main-header {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.8rem;
-    font-weight: 800;
-    color: #f0f0f0;
+    font-weight: 700;
+    color: var(--text-primary);
     letter-spacing: -0.02em;
     line-height: 1.15;
 }
 .sub-header {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    color: #888888;
+    color: var(--text-secondary);
     font-weight: 400;
     letter-spacing: 0.02em;
     margin-top: 8px;
 }
 
-/* ── Cards ── */
+/* ── Cards (glassmorphism-adjacent dark panels) ── */
 .result-card, .image-prompt-card {
-    background: linear-gradient(145deg, rgba(35, 22, 8, 0.90), rgba(20, 12, 4, 0.95));
-    border: 1px solid var(--border-main);
-    border-radius: 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 18px;
     padding: 24px;
     margin: 12px 0;
     font-size: 0.95rem;
     line-height: 1.7;
     white-space: pre-wrap;
-    color: #e0e0e0;
-    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.50);
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    color: var(--text-primary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .result-card:hover, .image-prompt-card:hover {
     transform: translateY(-2px);
     border-color: var(--border-hover);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
 }
-.result-card       { border-left: 4px solid #c47820; }
-.image-prompt-card { border-left: 4px solid #a05c10; }
+.result-card       { border-left: 3px solid #5C4033; }
+.image-prompt-card { border-left: 3px solid #4a3a32; }
 
-/* ── Badges ── */
+/* ── Badges (dark pills like reference tags) ── */
 .badge {
     display: inline-block;
-    background: rgba(160, 100, 30, 0.18);
-    border: 1px solid rgba(180, 120, 40, 0.28);
-    border-radius: 8px;
+    background: #252525;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
     padding: 4px 10px;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #c09050;
+    color: #E0E0E0;
     margin: 2px 4px 2px 0;
     letter-spacing: 0.02em;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 /* ── Metric tiles ── */
 .metric-tile {
-    background: rgba(20, 14, 6, 0.80);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
     padding: 16px;
     text-align: center;
 }
 .metric-value {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2rem;
-    font-weight: 800;
-    color: #d4a060;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 .metric-label {
-    font-size: 0.75rem;
-    color: #606060;
+    font-size: 0.7rem;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     font-weight: 600;
     margin-top: 4px;
 }
@@ -174,61 +180,61 @@ section[data-testid="stMain"] {
 /* ── Divider ── */
 .section-divider {
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 1px solid var(--border-subtle);
     margin: 28px 0;
 }
 
 /* ── History items ── */
 .history-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    background: rgba(20, 20, 20, 0.85);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
     padding: 14px;
     margin: 8px 0;
     transition: background 0.2s ease, border-color 0.2s ease;
 }
 .history-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(37, 37, 37, 0.95);
+    border-color: var(--border-hover);
 }
 .history-topic {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #e8e8e8;
+    color: var(--text-primary);
 }
 .history-meta {
     font-size: 0.75rem;
-    color: #606060;
+    color: var(--text-muted);
     margin-top: 6px;
 }
 
-/* ── Section titles ── */
+/* ── Section titles (MENU-style caps) ── */
 .section-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.14em;
     margin-bottom: 16px;
 }
 section[data-testid="stSidebar"] .section-title {
-    color: #505050 !important;
+    color: var(--text-muted) !important;
 }
 section[data-testid="stMain"] .section-title {
-    color: #888888 !important;
+    color: var(--text-secondary) !important;
 }
 
 /* ── Widget labels ── */
 section[data-testid="stSidebar"] label[data-testid="stWidgetLabel"] p,
 section[data-testid="stSidebar"] label[data-testid="stWidgetLabel"] span {
-    color: #606060 !important;
+    color: var(--text-muted) !important;
     font-size: 0.875rem !important;
     font-weight: 500 !important;
 }
 section[data-testid="stMain"] label[data-testid="stWidgetLabel"] p,
 section[data-testid="stMain"] label[data-testid="stWidgetLabel"] span {
-    color: #888888 !important;
+    color: var(--text-secondary) !important;
     font-size: 0.875rem !important;
     font-weight: 500 !important;
 }
@@ -236,38 +242,39 @@ section[data-testid="stMain"] label[data-testid="stWidgetLabel"] span {
 /* ── Sidebar inputs ── */
 section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div,
 section[data-testid="stSidebar"] .stTextInput input {
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    border-radius: 10px !important;
-    color: #c0c0c0 !important;
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
 }
 section[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:hover {
-    border-color: rgba(255, 255, 255, 0.14) !important;
+    border-color: var(--border-hover) !important;
 }
 
 /* ── Main inputs ── */
 section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div,
 section[data-testid="stMain"] .stTextInput input,
 section[data-testid="stMain"] .stTextArea textarea {
-    background: rgba(30, 18, 6, 0.90) !important;
-    border: 1px solid rgba(130, 80, 25, 0.28) !important;
-    border-radius: 11px !important;
-    color: #e0e0e0 !important;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 14px !important;
+    color: var(--text-primary) !important;
     font-weight: 400 !important;
 }
 section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div:hover,
 section[data-testid="stMain"] .stTextInput input:hover {
-    border-color: rgba(200, 130, 45, 0.40) !important;
+    border-color: var(--border-hover) !important;
 }
 section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] > div:focus-within,
-section[data-testid="stMain"] .stTextInput input:focus {
-    border-color: rgba(200, 130, 50, 0.60) !important;
-    box-shadow: 0 0 0 1px rgba(200, 130, 50, 0.18) !important;
+section[data-testid="stMain"] .stTextInput input:focus,
+section[data-testid="stMain"] .stTextArea textarea:focus {
+    border-color: rgba(160, 82, 45, 0.55) !important;
+    box-shadow: 0 0 0 1px rgba(160, 82, 45, 0.2) !important;
 }
 section[data-testid="stMain"] .stSelectbox [data-baseweb="select"] span,
 section[data-testid="stMain"] .stSelectbox div[data-baseweb="select"] * {
     font-weight: 500 !important;
-    color: #e0e0e0 !important;
+    color: var(--text-primary) !important;
 }
 
 /* ── Dropdown menu ── */
@@ -275,79 +282,105 @@ div[data-baseweb="popover"] li[role="option"],
 div[data-baseweb="menu"] li[role="option"],
 ul[role="listbox"] li[role="option"] {
     font-weight: 500 !important;
-    color: #c8c8c8 !important;
+    color: #E0E0E0 !important;
     transition: background-color 0.12s ease !important;
 }
 div[data-baseweb="popover"] li[role="option"]:hover,
 div[data-baseweb="popover"] li[role="option"][aria-selected="true"],
 div[data-baseweb="menu"] li[role="option"]:hover,
 ul[role="listbox"] li[role="option"]:hover {
-    font-weight: 700 !important;
-    background-color: rgba(180, 110, 30, 0.18) !important;
-    color: #f0f0f0 !important;
+    font-weight: 600 !important;
+    background-color: rgba(45, 45, 45, 0.95) !important;
+    color: var(--text-primary) !important;
 }
 div[data-baseweb="popover"] ul,
 div[data-baseweb="menu"] ul {
-    background: #1a1008 !important;
-    border: 1px solid rgba(140, 90, 25, 0.22) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.70) !important;
+    background: #1A1A1A !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65) !important;
     padding: 6px 0 !important;
 }
 
 /* ── Checkbox ── */
 .stCheckbox label p, .stCheckbox label span {
     font-weight: 500 !important;
-    color: #888888 !important;
+    color: var(--text-secondary) !important;
     font-size: 0.875rem !important;
 }
 
-/* ── Buttons ── */
+/* ── Buttons (dark rounded controls, subtle warm hover) ── */
 .stButton > button,
 .stDownloadButton > button {
-    background: linear-gradient(135deg, #c47820, #8a5010) !important;
-    color: #f5f5f5 !important;
-    border: 1px solid rgba(180, 120, 35, 0.28) !important;
-    border-radius: 10px !important;
-    font-family: 'Outfit', sans-serif !important;
+    background: #2C2C2C !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    font-family: 'Inter', sans-serif !important;
     font-weight: 600 !important;
     padding: 10px 24px !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
-    box-shadow: 0 4px 18px rgba(140, 80, 8, 0.28) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
 }
 .stButton > button:hover,
 .stDownloadButton > button:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 8px 24px rgba(160, 95, 12, 0.36) !important;
-    filter: brightness(1.08) !important;
+    background: #333333 !important;
+    border-color: rgba(160, 82, 45, 0.45) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
 }
 
 /* ── Tool links ── */
 .tool-links {
-    color: #888888;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     margin-top: 12px;
     font-weight: 500;
 }
 .tool-links a {
-    color: #c47820 !important;
+    color: #C9A080 !important;
     text-decoration: none;
     transition: color 0.2s;
 }
 .tool-links a:hover {
-    color: #e8a840 !important;
+    color: #E8D4C4 !important;
     text-decoration: underline;
 }
 
 /* ── Expander ── */
 .streamlit-expanderHeader {
     font-weight: 600 !important;
-    color: #606060 !important;
+    color: var(--text-muted) !important;
 }
 div[data-testid="stExpander"] {
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 10px !important;
-    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 14px !important;
+    background: rgba(20, 20, 20, 0.6) !important;
+}
+
+/* ── Streamlit alerts / messages ── */
+div[data-testid="stAlert"] {
+    border-radius: 14px !important;
+    border: 1px solid var(--border-subtle) !important;
+}
+section[data-testid="stMain"] div[data-testid="stMarkdownContainer"] p,
+section[data-testid="stMain"] div[data-testid="stMarkdownContainer"] li {
+    color: var(--text-primary);
+}
+div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] p {
+    color: inherit !important;
+}
+section[data-testid="stMain"] .stCodeBlock,
+section[data-testid="stMain"] pre {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+}
+
+/* ── Spinner ── */
+div[data-testid="stSpinner"] {
+    color: #E0E0E0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -394,12 +427,12 @@ img_engine, img_error = load_image_engine()
 # ═══════════════════════════════════════════
 with st.sidebar:
     st.markdown(
-        '<div class="main-header" style="font-size:1.8rem;color:#d8d8d8;'
-        'background:none;-webkit-text-fill-color:#d8d8d8;">MCG</div>',
+        '<div class="main-header" style="font-size:1.8rem;color:#F5F5F5;'
+        'background:none;-webkit-text-fill-color:#F5F5F5;">MCG</div>',
         unsafe_allow_html=True
     )
     st.markdown(
-        '<div class="sub-header" style="color:#585858;">Marketing Content Generator</div>',
+        '<div class="sub-header" style="color:#888888;">Marketing Content Generator</div>',
         unsafe_allow_html=True
     )
     st.markdown('<hr class="section-divider">', unsafe_allow_html=True)
@@ -447,12 +480,12 @@ with st.sidebar:
                     <div class="history-meta">
                         <span class="badge">{item['content_type']}</span>
                         <span class="badge">{item['tone']}</span><br>
-                        <span style="display:inline-block;margin-top:6px;color:#505050;">{item['timestamp']}</span>
+                        <span style="display:inline-block;margin-top:6px;color:#888888;">{item['timestamp']}</span>
                     </div>
                 </div>""", unsafe_allow_html=True)
         else:
             st.markdown(
-                '<p style="color:#484848;font-size:0.85rem;margin-top:8px">'
+                '<p style="color:#888888;font-size:0.85rem;margin-top:8px">'
                 'No history yet. Generate your first piece of content.</p>',
                 unsafe_allow_html=True
             )
