@@ -49,7 +49,7 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     color: var(--text-primary);
 }
 
-/* ── Sidebar (Visionary-style graphite) ── */
+/* ── Sidebar ── */
 section[data-testid="stSidebar"] {
     background: var(--bg-sidebar) !important;
     border-right: 1px solid var(--border-subtle);
@@ -76,7 +76,7 @@ section[data-testid="stSidebar"] p {
     color: var(--text-muted) !important;
 }
 
-/* ── Main panel — warm copper top-left → deep charcoal / purple-black ── */
+/* ── Main panel ── */
 section[data-testid="stMain"] {
     background:
         radial-gradient(
@@ -117,7 +117,7 @@ section[data-testid="stMain"] {
     margin-top: 8px;
 }
 
-/* ── Cards (glassmorphism-adjacent dark panels) ── */
+/* ── Cards ── */
 .result-card, .image-prompt-card {
     background: var(--bg-elevated);
     border: 1px solid var(--border-subtle);
@@ -139,7 +139,7 @@ section[data-testid="stMain"] {
 .result-card       { border-left: 3px solid #5C4033; }
 .image-prompt-card { border-left: 3px solid #4a3a32; }
 
-/* ── Badges (dark pills like reference tags) ── */
+/* ── Badges ── */
 .badge {
     display: inline-block;
     background: #252525;
@@ -209,7 +209,7 @@ section[data-testid="stMain"] {
     margin-top: 6px;
 }
 
-/* ── Section titles (MENU-style caps) ── */
+/* ── Section titles ── */
 .section-title {
     font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
@@ -309,7 +309,7 @@ div[data-baseweb="menu"] ul {
     font-size: 0.875rem !important;
 }
 
-/* ── Buttons (dark rounded controls, subtle warm hover) ── */
+/* ── Main buttons ── */
 .stButton > button,
 .stDownloadButton > button {
     background: #2C2C2C !important;
@@ -328,6 +328,28 @@ div[data-baseweb="menu"] ul {
     background: #333333 !important;
     border-color: rgba(160, 82, 45, 0.45) !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* ── Sidebar Load buttons — small and subtle ── */
+div[data-testid="stSidebar"] .stButton > button {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #888888 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    padding: 4px 12px !important;
+    box-shadow: none !important;
+    margin-top: 6px !important;
+    letter-spacing: 0.04em !important;
+}
+div[data-testid="stSidebar"] .stButton > button:hover {
+    background: rgba(160, 82, 45, 0.15) !important;
+    color: #C9A080 !important;
+    border-color: rgba(160, 82, 45, 0.30) !important;
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
 }
 
 /* ── Tool links ── */
@@ -358,7 +380,7 @@ div[data-testid="stExpander"] {
     background: rgba(20, 20, 20, 0.6) !important;
 }
 
-/* ── Streamlit alerts / messages ── */
+/* ── Alerts ── */
 div[data-testid="stAlert"] {
     border-radius: 14px !important;
     border: 1px solid var(--border-subtle) !important;
@@ -473,7 +495,7 @@ with st.sidebar:
         )[:8]
 
         if display_history:
-            for item in display_history:
+            for i, item in enumerate(display_history):
                 st.markdown(f"""
                 <div class="history-item">
                     <div class="history-topic">{item['topic'][:28]}{'...' if len(item['topic']) > 28 else ''}</div>
@@ -483,6 +505,25 @@ with st.sidebar:
                         <span style="display:inline-block;margin-top:6px;color:#888888;">{item['timestamp']}</span>
                     </div>
                 </div>""", unsafe_allow_html=True)
+
+                if st.button(
+                    "Load",
+                    key=f"load_{i}_{item['timestamp']}",
+                    use_container_width=True,
+                ):
+                    st.session_state.generated_content = item['full_content']
+                    st.session_state.generation_meta   = {
+                        "content_type": item['content_type'],
+                        "topic":        item['topic'],
+                        "tone":         item['tone'],
+                        "platform":     item['platform'],
+                        "model":        "llama-3.3-70b-versatile",
+                        "tokens_used":  0,
+                    }
+                    st.session_state.image_prompt    = None
+                    st.session_state.generated_image = None
+                    st.rerun()
+
         else:
             st.markdown(
                 '<p style="color:#888888;font-size:0.85rem;margin-top:8px">'
@@ -765,4 +806,4 @@ if st.session_state.generated_content:
             if ctx:
                 st.markdown(f"```\n{ctx}\n```")
             else:
-                st.info("No similar past content found. This was a fresh generation.") 
+                st.info("No similar past content found. This was a fresh generation.")
